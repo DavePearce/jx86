@@ -56,42 +56,20 @@ public interface Instruction {
 		invd,  // Invalidate internal caches
 		iret,  // Interrupt return
 		iretd, // Interrupt return (double word operand)
-		ja,    // Jump if above (CF == 0 and ZF == 0)
-		jae,   // Jump if above or equal (CF == 0)
-		jb,    // Jump if below (CF == 1)
-		jbe,   // Jump if below or equal (CF == 1 or ZF == 1)
-		jc,    // Jump if carry (CF == 1)
-		jcxz,  // Jump if cx == 0
-		jecxz, // Jump if ecx == 0
-		je,    // Jump if equal (ZF == 1)
-		jg,    // Jump if greater (ZF == 0 and SF==OF)
-		jge,   // Jump if greater or equal  (SF==OF)
-		jl,    // Jump if less (SF<>OF)
-		jle,   // Jump if less or equal (ZF == 1 or SF<>OF)
-		jna,   // Jump if not above (CF == 1 or ZF == 1)
-		jnae,  // Jump if not above or equals (CF==1)
-		jnb,   // Jump if not below (CF=0)
-		jnbe,  // Jump if not below or equal (CF=0 and ZF=0)
-		jnc,   // Jump if not carry (CF=0)
-		jne,   // Jump if not equal (ZF=0)
-		jng,   // Jump if not greater (ZF=1 or SF<>OF)		 
-		jnge,  // Jump if not greater or equal (SF<>OF)
-		jnl,   // Jump if not less (SF=OF)
-		jnle,  // Jump if not less or equal (ZF=0 and SF=OF)
-		jno,   // Jump if not overflow (OF=0)
-		jnp,   // Jump if not parity (PF=0)
-		jns,   // Jump if not sign (SF=0)
-		jnz,   // Jump if not zero (ZF=0)
-		jo,    // Jump if overflow (OF=1)	
-		jp,    // Jump if parity (PF=1)
-		jpe,   // Jump if parity even (PF=1)
-		jpo,   // Jump if parity odd (PF=0)
-		js,    // Jump if sign (SF=1)
-		jz,    // Jump if zero (ZF = 1)
-		
+		lahf,  // Load Status Flags into AH Register
+		lar,   // Load Access Rights Byte
+		lds,   // Load Far Pointer
+		les,   // Load Far Pointer
+		lfs,   // Load Far Pointer
+		lgs,   // Load Far Pointer
+		lss,   // Load Far Pointer
+
 		leave, // destroy stack frame		
 		nop,   // no operation
-		popf,  // pop into flags
+		popa,  // Pop All General-Purpose Registers
+		popf,  // Pop into flags
+		pusha, // Push All General-Purpose Registers
+		pushf, // Push EFLAGS Register onto the Stack
 		ret    // return from function
 	}
 	
@@ -125,13 +103,25 @@ public interface Instruction {
 	// ============================================================	
 	
 	public enum UnaryOp {
-		dec,   // decrement by 1
-		inc,   // increment by 1
+		dec,    // Decrement by 1
+		inc,    // Increment by 1
 		in,
-		Int,   // call to interrupt
-		invlpg, // invalidate TLB entry
+		Int,    // Call to interrupt
+		invlpg, // Invalidate TLB entry
+		neg,    // Two's Complement Negation
+		not,    // One's Complement Negation
+		out,    // Output to Port
 		push,
-		pop
+		pop,
+		rcl,     // Rotate carry left
+		rcr,     // Rotate carry right
+		rol,     // Rotate left
+		ror,     // Rotate right
+		sahf,    // Store AH into Flags
+		sal,     // Shift Arithmetic Left
+		sar,     // Shift Arithmetic Right
+		shl,     // Shift Left
+		shr,     // Shift Right
 	}
 	
 	/**
@@ -190,6 +180,8 @@ public interface Instruction {
 		cmpsd,   // compare double word
 		cmpxchg, // compare and exchange
 		cmpxchg8b, // compare and exchange 8 bytes
+		or,      // Logical Inclusive OR
+		
 		
 	}
 	
@@ -305,7 +297,7 @@ public interface Instruction {
 	// Branch Operations
 	// ============================================================
 	
-	public enum BranchOp {		
+	public enum RelativeOp {		
 		ja,    // Jump if above (CF == 0 and ZF == 0)
 		jae,   // Jump if above or equal (CF == 0)
 		jb,    // Jump if below (CF == 1)
@@ -320,6 +312,7 @@ public interface Instruction {
 		jle,   // Jump if less or equal (ZF == 1 or SF<>OF)
 		jna,   // Jump if not above (CF == 1 or ZF == 1)
 		jnae,  // Jump if not above or equals (CF==1)
+		jmp,   // Unconditional Jump
 		jnb,   // Jump if not below (CF=0)
 		jnbe,  // Jump if not below or equal (CF=0 and ZF=0)
 		jnc,   // Jump if not carry (CF=0)
@@ -337,7 +330,13 @@ public interface Instruction {
 		jpe,   // Jump if parity even (PF=1)
 		jpo,   // Jump if parity odd (PF=0)
 		js,    // Jump if sign (SF=1)
-		jz,    // Jump if zero (ZF = 1)		
+		jz,    // Jump if zero (ZF = 1)	
+		lea,   // Load Effective Adddress
+		loop,  // Loop according r/e/cx
+		loope,  // Loop according r/e/cx
+		loopz,  // Loop according r/e/cx
+		loopne,  // Loop according r/e/cx
+		loopnz,  // Loop according r/e/cx
 	}
 	
 	/**
@@ -356,8 +355,8 @@ public interface Instruction {
 	 * @author David J. Pearce
 	 * 
 	 */
-	public final class Branch implements Instruction {
-		public final BranchOp operation;
+	public final class Relative implements Instruction {
+		public final RelativeOp operation;
 		public final String operand;
 
 		/**
@@ -368,7 +367,7 @@ public interface Instruction {
 		 * @param operand
 		 *            Register operand
 		 */
-		public Branch(BranchOp operation, String operand) {
+		public Relative(RelativeOp operation, String operand) {
 			this.operation = operation;
 			this.operand = operand;
 		}
