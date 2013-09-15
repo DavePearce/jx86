@@ -1,0 +1,67 @@
+<project name="jx86" default="jarfile">  
+  <property name="version" value="0.1.0"/>
+
+  <!-- ============================================== -->
+  <!-- Build Commands -->
+  <!-- ============================================== -->
+
+  <target name="build">
+    <javac debug="true" debuglevel="vars,lines,source" source="1.6" includeantruntime="true" classpath=""> 
+      <src path="src"/>
+      <include name="*/**"/>
+      <exclude name="*/**/package-info.java"/> 
+    </javac>
+  </target>
+
+  <!-- ============================================== -->
+  <!-- Documenation --> 
+  <!-- ============================================== -->
+
+  <target name="doc">
+    <javadoc
+       destdir="docs/api"
+       author="true"
+       version="true"
+       use="true"
+       windowtitle="Jx86 API">
+      <doctitle><![CDATA[<h1>Jx86: a Java Library Bytecode Assembler / Disassembler (v${version})</h1>]]></doctitle>
+      <bottom><![CDATA[<i>Copyright &#169; 2013 David J. Pearce. All Rights Reserved.</i>]]></bottom>
+      <packageset dir="src">
+	<include name="jx86/**"/>
+      </packageset>
+      </javadoc>
+  </target>
+
+  <!-- ============================================== -->
+  <!-- Distribution -->
+  <!-- ============================================== -->
+
+  <target name="jarfile" depends="build">
+    <mkdir dir="lib"/>
+    <jar destfile="lib/jx86-v${version}.jar">
+      <fileset dir="src">
+	<include name="jx86/**/*.class"/>
+      </fileset>
+    </jar>
+    <echo message="============================================="/>
+    <echo message="BUILT: lib/jx86-${version}.jar"/>
+    <echo message="============================================="/>
+  </target>
+
+  <!-- ============================================== -->
+  <!-- Misc Commands -->
+  <!-- ============================================== -->
+
+  <target name="clean">
+    <delete includeEmptyDirs="true" failonerror="false">
+      <fileset file="*~"/>
+      <fileset dir="lib"/>
+      <fileset dir="dist"/>
+      <fileset dir="docs"/>
+      <fileset dir="tests">
+	<include name="**/*.class"/>
+      </fileset>
+    </delete>
+  </target>
+
+</project>
