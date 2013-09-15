@@ -54,8 +54,12 @@ public class AsmFileWriter {
 	public void write(Instruction insn) {
 		if(insn instanceof Instruction.Label) {
 			write((Instruction.Label) insn);
+		} else if(insn instanceof Instruction.UnaryReg) {
+			write((Instruction.UnaryReg) insn);
 		} else if(insn instanceof Instruction.BinaryRegReg) {
 			write((Instruction.BinaryRegReg) insn);
+		} else if(insn instanceof Instruction.BinaryImmReg) {
+			write((Instruction.BinaryImmReg) insn);
 		} else {
 			throw new IllegalArgumentException("unknown instruction encountered: " + insn);
 		}
@@ -65,7 +69,20 @@ public class AsmFileWriter {
 		throw new IllegalArgumentException("unknown instruction encountered: " + insn);
 	}
 	
+	public void write(Instruction.UnaryReg insn) {
+		out.println("\t" + insn.operation 
+				+ Register.suffix(insn.operand.width()) + " %" + insn.operand);
+	}
+	
 	public void write(Instruction.BinaryRegReg insn) {
-		out.println("\tmov" + Register.suffix(insn.leftOperand.width()) + " %" + insn.leftOperand + ", %" + insn.rightOperand);
+		out.println("\t" + insn.operation 
+				+ Register.suffix(insn.leftOperand.width()) + " %"
+				+ insn.leftOperand + ", %" + insn.rightOperand);
+	}
+	
+	public void write(Instruction.BinaryImmReg insn) {
+		out.println("\t" + insn.operation 
+				+ Register.suffix(insn.rightOperand.width()) + " $"
+				+ insn.leftOperand + ", %" + insn.rightOperand);
 	}
 }

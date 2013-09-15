@@ -36,13 +36,100 @@ public interface Instruction {
 			return label + ":";
 		}
 	}
+
+	// ============================================================
+	// Unit Operationrs
+	// ============================================================	
+
+	public enum UnitOp {
+		clc,   // Clear Carry flag
+		cdc,   // Clear direction flag
+		cli,   // Clear interrupt flag
+		cmc,   // Complement carry flag
+		cbw,   // Convert byte to word
+		cwde,  // Convert word to double word
+		cwd,   // Convert word to double word
+		cwq,   // Convert double word to quad word
+		cpuid, // CPU identification
+		enter, // Make stack frame
+		hlt,   // Halt
+		invd,  // Invalidate internal caches
+		iret,  // Interrupt return
+		iretd, // Interrupt return (double word operand)
+		ja,    // Jump if above (CF == 0 and ZF == 0)
+		jae,   // Jump if above or equal (CF == 0)
+		jb,    // Jump if below (CF == 1)
+		jbe,   // Jump if below or equal (CF == 1 or ZF == 1)
+		jc,    // Jump if carry (CF == 1)
+		jcxz,  // Jump if cx == 0
+		jecxz, // Jump if ecx == 0
+		je,    // Jump if equal (ZF == 1)
+		jg,    // Jump if greater (ZF == 0 and SF==OF)
+		jge,   // Jump if greater or equal  (SF==OF)
+		jl,    // Jump if less (SF<>OF)
+		jle,   // Jump if less or equal (ZF == 1 or SF<>OF)
+		jna,   // Jump if not above (CF == 1 or ZF == 1)
+		jnae,  // Jump if not above or equals (CF==1)
+		jnb,   // Jump if not below (CF=0)
+		jnbe,  // Jump if not below or equal (CF=0 and ZF=0)
+		jnc,   // Jump if not carry (CF=0)
+		jne,   // Jump if not equal (ZF=0)
+		jng,   // Jump if not greater (ZF=1 or SF<>OF)		 
+		jnge,  // Jump if not greater or equal (SF<>OF)
+		jnl,   // Jump if not less (SF=OF)
+		jnle,  // Jump if not less or equal (ZF=0 and SF=OF)
+		jno,   // Jump if not overflow (OF=0)
+		jnp,   // Jump if not parity (PF=0)
+		jns,   // Jump if not sign (SF=0)
+		jnz,   // Jump if not zero (ZF=0)
+		jo,    // Jump if overflow (OF=1)	
+		jp,    // Jump if parity (PF=1)
+		jpe,   // Jump if parity even (PF=1)
+		jpo,   // Jump if parity odd (PF=0)
+		js,    // Jump if sign (SF=1)
+		jz,    // Jump if zero (ZF = 1)
+		
+		leave, // destroy stack frame		
+		nop,   // no operation
+		popf,  // pop into flags
+		ret    // return from function
+	}
+	
+	/**
+	 * Represents a unit instruction (e.g. <code>ret</code>, <code>nop</code>,
+	 * <code>popf</code>, <code>clc</code>, etc) which has no operands.
+	 * 
+	 * @author David J. Pearce
+	 * 
+	 */
+	public final class Unit implements Instruction {
+		public final UnitOp operation;
+
+		/**
+		 * Create a unary instruction with a register operand.
+		 * 
+		 * @param operation
+		 *            Operation to perform
+		 */
+		public Unit(UnitOp operation) {
+			this.operation = operation;
+		}
+
+		public String toString() {
+			return operation.toString();
+		}
+	}
 	
 	// ============================================================
 	// Unary Operations
 	// ============================================================	
 	
-
 	public enum UnaryOp {
+		dec,   // decrement by 1
+		inc,   // increment by 1
+		in,
+		Int,   // call to interrupt
+		invlpg, // invalidate TLB entry
 		push,
 		pop
 	}
@@ -90,11 +177,20 @@ public interface Instruction {
 	
 	public enum BinaryOp {
 		mov,
+		adc,     // Add with Carry
 		add,
 		sub,
-		mul,
-		idiv,
-		cmp
+		mul,     // unsigned multiplication
+		imul,    // signed multiplication
+		div,     // unsigned divide
+		idiv,    // signed division
+		cmp,
+		cmpsb,   // compare byte word
+		cmpsw,   // compare word
+		cmpsd,   // compare double word
+		cmpxchg, // compare and exchange
+		cmpxchg8b, // compare and exchange 8 bytes
+		
 	}
 	
 	/**
@@ -200,8 +296,85 @@ public interface Instruction {
 		}	
 		
 		public String toString() {
-			return operation.toString() + " " + Register.suffix(rightOperand.width())
+			return operation.toString() + Register.suffix(rightOperand.width())
 					+ "$" + leftOperand + ", %" + rightOperand;
 		}
 	}	
+	
+	// ============================================================
+	// Branch Operations
+	// ============================================================
+	
+	public enum BranchOp {		
+		ja,    // Jump if above (CF == 0 and ZF == 0)
+		jae,   // Jump if above or equal (CF == 0)
+		jb,    // Jump if below (CF == 1)
+		jbe,   // Jump if below or equal (CF == 1 or ZF == 1)
+		jc,    // Jump if carry (CF == 1)
+		jcxz,  // Jump if cx == 0
+		jecxz, // Jump if ecx == 0
+		je,    // Jump if equal (ZF == 1)
+		jg,    // Jump if greater (ZF == 0 and SF==OF)
+		jge,   // Jump if greater or equal  (SF==OF)
+		jl,    // Jump if less (SF<>OF)
+		jle,   // Jump if less or equal (ZF == 1 or SF<>OF)
+		jna,   // Jump if not above (CF == 1 or ZF == 1)
+		jnae,  // Jump if not above or equals (CF==1)
+		jnb,   // Jump if not below (CF=0)
+		jnbe,  // Jump if not below or equal (CF=0 and ZF=0)
+		jnc,   // Jump if not carry (CF=0)
+		jne,   // Jump if not equal (ZF=0)
+		jng,   // Jump if not greater (ZF=1 or SF<>OF)		 
+		jnge,  // Jump if not greater or equal (SF<>OF)
+		jnl,   // Jump if not less (SF=OF)
+		jnle,  // Jump if not less or equal (ZF=0 and SF=OF)
+		jno,   // Jump if not overflow (OF=0)
+		jnp,   // Jump if not parity (PF=0)
+		jns,   // Jump if not sign (SF=0)
+		jnz,   // Jump if not zero (ZF=0)
+		jo,    // Jump if overflow (OF=1)	
+		jp,    // Jump if parity (PF=1)
+		jpe,   // Jump if parity even (PF=1)
+		jpo,   // Jump if parity odd (PF=0)
+		js,    // Jump if sign (SF=1)
+		jz,    // Jump if zero (ZF = 1)		
+	}
+	
+	/**
+	 * Represents a unary branching instruction (e.g. <code>jmp</code>,
+	 * <code>ja</code>, etc) with a label operand. For example:
+	 * 
+	 * <pre>
+	 * cmp %eax,%ebx
+	 * ja  target
+	 * </pre>
+	 * 
+	 * This compares the <code>eax</code> and <code>ebx</code> registesr and
+	 * branches to <code>target</code> if <code>eax</code> is above
+	 * <code>ebx</code>.
+	 * 
+	 * @author David J. Pearce
+	 * 
+	 */
+	public final class Branch implements Instruction {
+		public final BranchOp operation;
+		public final String operand;
+
+		/**
+		 * Create a unary instruction with a register operand.
+		 * 
+		 * @param operation
+		 *            Operation to perform
+		 * @param operand
+		 *            Register operand
+		 */
+		public Branch(BranchOp operation, String operand) {
+			this.operation = operation;
+			this.operand = operand;
+		}
+
+		public String toString() {
+			return operation.toString() + " " + operand;
+		}
+	}
 }
