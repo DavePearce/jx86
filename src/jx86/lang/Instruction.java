@@ -28,8 +28,8 @@ public interface Instruction {
 		
 		public Label(String label, int alignment, boolean global) {
 			this.label = label;
-			this.alignment = 1;
-			this.global = false;
+			this.alignment = alignment;
+			this.global = global;
 		}
 		
 		public String toString() {
@@ -297,7 +297,8 @@ public interface Instruction {
 	// Branch Operations
 	// ============================================================
 	
-	public enum RelativeOp {		
+	public enum RelativeOp {
+		call,  // Call procedure
 		ja,    // Jump if above (CF == 0 and ZF == 0)
 		jae,   // Jump if above or equal (CF == 0)
 		jb,    // Jump if below (CF == 1)

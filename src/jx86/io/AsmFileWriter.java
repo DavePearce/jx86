@@ -62,13 +62,21 @@ public class AsmFileWriter {
 			write((Instruction.BinaryRegReg) insn);
 		} else if(insn instanceof Instruction.BinaryImmReg) {
 			write((Instruction.BinaryImmReg) insn);
+		} else if(insn instanceof Instruction.Relative) {
+			write((Instruction.Relative) insn);
 		} else {
 			throw new IllegalArgumentException("unknown instruction encountered: " + insn);
 		}
 	}
 	
 	public void write(Instruction.Label insn) {
-		throw new IllegalArgumentException("unknown instruction encountered: " + insn);
+		if(insn.global) {
+			out.println("\t.globl " + insn.label);
+		}
+		if(insn.alignment != 1) {
+			out.println("\t.align " + insn.alignment);
+		}
+		out.println(insn.label + ":");		
 	}
 	
 	public void write(Instruction.Unit insn) {
@@ -90,5 +98,9 @@ public class AsmFileWriter {
 		out.println("\t" + insn.operation 
 				+ Register.suffix(insn.rightOperand.width()) + " $"
 				+ insn.leftOperand + ", %" + insn.rightOperand);
+	}
+	
+	public void write(Instruction.Relative insn) {
+		out.println("\t" + insn.operation + " " + insn.operand);
 	}
 }

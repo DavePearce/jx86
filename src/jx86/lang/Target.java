@@ -54,4 +54,20 @@ public final class Target {
 		this.os = os;
 		this.arch = arch;
 	}
+	
+	/**
+	 * Return the "natural" size of this architecture in bytes.
+	 * 
+	 * @return
+	 */
+	public int widthInBytes() {
+		switch (arch) {
+		case X86_32:
+			return 4; // 4 * 8 = 32
+		case X86_64:
+			return 8; // 8 * 8 = 64
+		}
+		throw new IllegalArgumentException("Unknown architecture encountered: "
+				+ arch);
+	}
 }
