@@ -55,6 +55,7 @@ public class Register {
 	public static final Register SI = new Register("si", Width.Word);
 	public static final Register BP = new Register("bp", Width.Word);
 	public static final Register SP = new Register("sp", Width.Word);
+	public static final Register IP = new Register("ip", Width.Word);
 		
 	// x86_32
 	public static final Register EAX = new Register("eax", Width.Long);
@@ -65,7 +66,8 @@ public class Register {
 	public static final Register ESI = new Register("esi", Width.Long);
 	public static final Register EBP = new Register("ebp", Width.Long);
 	public static final Register ESP = new Register("esp", Width.Long);
-		
+	public static final Register EIP = new Register("eip", Width.Long);
+	
 	// x86_64
 	public static final Register RAX = new Register("rax", Width.Quad);
 	public static final Register RBX = new Register("rbx", Width.Quad);
@@ -75,6 +77,7 @@ public class Register {
 	public static final Register RSI = new Register("rsi", Width.Quad);
 	public static final Register RBP = new Register("rbp", Width.Quad);
 	public static final Register RSP = new Register("rsp", Width.Quad);
+	public static final Register RIP = new Register("rip", Width.Quad);
 	
 	public static final Register[] AX_FAMILY = {
 			Register.AL,Register.AH,Register.AX,Register.EAX,Register.RAX
@@ -100,6 +103,9 @@ public class Register {
 	public static final Register[] SP_FAMILY = {
 		Register.SP,Register.ESP,Register.RSP
 	};
+	public static final Register[] IP_FAMILY = {
+		Register.IP,Register.EIP,Register.RIP
+	};
 	
 	public static final Register[][] ALL_FAMILIES = {
 		AX_FAMILY,
@@ -110,6 +116,7 @@ public class Register {
 		SI_FAMILY,
 		BP_FAMILY,
 		SP_FAMILY,
+		IP_FAMILY
 	};
 	
 	// ============================================

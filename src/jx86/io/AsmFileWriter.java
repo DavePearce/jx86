@@ -56,14 +56,18 @@ public class AsmFileWriter {
 			write((Instruction.Label) insn);
 		} else if(insn instanceof Instruction.Unit) {
 			write((Instruction.Unit) insn);
-		} else if(insn instanceof Instruction.UnaryReg) {
-			write((Instruction.UnaryReg) insn);
-		} else if(insn instanceof Instruction.BinaryRegReg) {
-			write((Instruction.BinaryRegReg) insn);
-		} else if(insn instanceof Instruction.BinaryImmReg) {
-			write((Instruction.BinaryImmReg) insn);
-		} else if(insn instanceof Instruction.Relative) {
-			write((Instruction.Relative) insn);
+		} else if(insn instanceof Instruction.Reg) {
+			write((Instruction.Reg) insn);
+		} else if(insn instanceof Instruction.RegReg) {
+			write((Instruction.RegReg) insn);
+		} else if(insn instanceof Instruction.ImmReg) {
+			write((Instruction.ImmReg) insn);
+		} else if(insn instanceof Instruction.Addr) {
+			write((Instruction.Addr) insn);
+		} else if(insn instanceof Instruction.AddrReg) {
+			write((Instruction.AddrReg) insn);
+		} else if(insn instanceof Instruction.AddrRegReg) {
+			write((Instruction.AddrRegReg) insn);
 		} else {
 			throw new IllegalArgumentException("unknown instruction encountered: " + insn);
 		}
@@ -83,24 +87,37 @@ public class AsmFileWriter {
 		out.println("\t" + insn.operation);
 	}
 	
-	public void write(Instruction.UnaryReg insn) {
+	public void write(Instruction.Reg insn) {
 		out.println("\t" + insn.operation 
 				+ Register.suffix(insn.operand.width()) + " %" + insn.operand);
 	}
 	
-	public void write(Instruction.BinaryRegReg insn) {
+	public void write(Instruction.RegReg insn) {
 		out.println("\t" + insn.operation 
 				+ Register.suffix(insn.leftOperand.width()) + " %"
 				+ insn.leftOperand + ", %" + insn.rightOperand);
 	}
 	
-	public void write(Instruction.BinaryImmReg insn) {
+	public void write(Instruction.ImmReg insn) {
 		out.println("\t" + insn.operation 
 				+ Register.suffix(insn.rightOperand.width()) + " $"
 				+ insn.leftOperand + ", %" + insn.rightOperand);
 	}
 	
-	public void write(Instruction.Relative insn) {
+	public void write(Instruction.Addr insn) {
 		out.println("\t" + insn.operation + " " + insn.operand);
+	}
+	
+	public void write(Instruction.AddrReg insn) {
+		out.println("\t" + insn.operation
+				+ Register.suffix(insn.rightOperand.width()) + " "
+				+ insn.leftOperand + ", %" + insn.rightOperand);
+	}
+	
+	public void write(Instruction.AddrRegReg insn) {
+		out.println("\t" + insn.operation
+				+ Register.suffix(insn.rightOperand.width()) + " "
+				+ insn.leftOperand_1 + "(%" + insn.leftOperand_2 + "), %"
+				+ insn.rightOperand);
 	}
 }

@@ -102,7 +102,7 @@ public interface Instruction {
 	// Unary Operations
 	// ============================================================	
 	
-	public enum UnaryOp {
+	public enum RegOp {
 		dec,    // Decrement by 1
 		inc,    // Increment by 1
 		in,
@@ -138,8 +138,8 @@ public interface Instruction {
 	 * @author David J. Pearce
 	 * 
 	 */
-	public final class UnaryReg implements Instruction {
-		public final UnaryOp operation;
+	public final class Reg implements Instruction {
+		public final RegOp operation;
 		public final Register operand;
 
 		/**
@@ -150,7 +150,7 @@ public interface Instruction {
 		 * @param operand
 		 *            Register operand
 		 */
-		public UnaryReg(UnaryOp operation, Register operand) {
+		public Reg(RegOp operation, Register operand) {
 			this.operation = operation;
 			this.operand = operand;
 		}
@@ -165,7 +165,7 @@ public interface Instruction {
 	// Binary Operations
 	// ============================================================
 	
-	public enum BinaryOp {
+	public enum RegRegOp {
 		mov,
 		adc,     // Add with Carry
 		add,
@@ -199,8 +199,8 @@ public interface Instruction {
 	 * @author David J. Pearce
 	 * 
 	 */
-	public final class BinaryRegReg implements Instruction {
-		public final BinaryOp operation;
+	public final class RegReg implements Instruction {
+		public final RegRegOp operation;
 		public final Register leftOperand;
 		public final Register rightOperand;
 		
@@ -215,7 +215,7 @@ public interface Instruction {
 		 * @param rightOperand
 		 *            Register operand on right-hand side
 		 */
-		public BinaryRegReg(BinaryOp operation, Register leftOperand, Register rightOperand) {
+		public RegReg(RegRegOp operation, Register leftOperand, Register rightOperand) {
 			if(leftOperand.width() != rightOperand.width()) {
 				throw new IllegalArgumentException("Register operands must have identical width");
 			}
@@ -230,6 +230,25 @@ public interface Instruction {
 		}
 	}
 	
+	public enum ImmRegOp {
+		mov,
+		adc,     // Add with Carry
+		add,
+		sub,
+		mul,     // unsigned multiplication
+		imul,    // signed multiplication
+		div,     // unsigned divide
+		idiv,    // signed division
+		cmp,
+		cmpsb,   // compare byte word
+		cmpsw,   // compare word
+		cmpsd,   // compare double word
+		cmpxchg, // compare and exchange
+		cmpxchg8b, // compare and exchange 8 bytes
+		or,      // Logical Inclusive OR
+		
+		
+	}
 	/**
 	 * Represents a binary instruction (e.g. <code>mov</code>, <code>add</code>,
 	 * etc) with an immediate source operand and a register target operand. For
@@ -244,8 +263,8 @@ public interface Instruction {
 	 * @author David J. Pearce
 	 * 
 	 */
-	public final class BinaryImmReg implements Instruction {
-		public final BinaryOp operation;
+	public final class ImmReg implements Instruction {
+		public final ImmRegOp operation;
 		public final long leftOperand;
 		public final Register rightOperand;
 		
@@ -262,7 +281,7 @@ public interface Instruction {
 		 * @param rightOperand
 		 *            Register operand on right-hand side.
 		 */
-		public BinaryImmReg(BinaryOp operation, long leftOperand, Register rightOperand) {
+		public ImmReg(ImmRegOp operation, long leftOperand, Register rightOperand) {
 			switch(rightOperand.width()) {
 			case Byte:
 				if(leftOperand < Byte.MIN_VALUE || leftOperand > Byte.MAX_VALUE) {
@@ -297,7 +316,7 @@ public interface Instruction {
 	// Branch Operations
 	// ============================================================
 	
-	public enum RelativeOp {
+	public enum AddrOp {
 		call,  // Call procedure
 		ja,    // Jump if above (CF == 0 and ZF == 0)
 		jae,   // Jump if above or equal (CF == 0)
@@ -332,7 +351,6 @@ public interface Instruction {
 		jpo,   // Jump if parity odd (PF=0)
 		js,    // Jump if sign (SF=1)
 		jz,    // Jump if zero (ZF = 1)	
-		lea,   // Load Effective Adddress
 		loop,  // Loop according r/e/cx
 		loope,  // Loop according r/e/cx
 		loopz,  // Loop according r/e/cx
@@ -341,8 +359,10 @@ public interface Instruction {
 	}
 	
 	/**
-	 * Represents a unary branching instruction (e.g. <code>jmp</code>,
-	 * <code>ja</code>, etc) with a label operand. For example:
+	 * Represents a unary instruction which uses a constant address operand
+	 * (represented with a label). For example, branching instructions (e.g.
+	 * <code>jmp</code>, <code>ja</code>, etc) with a label operand are
+	 * implemented in this way:
 	 * 
 	 * <pre>
 	 * cmp %eax,%ebx
@@ -356,8 +376,8 @@ public interface Instruction {
 	 * @author David J. Pearce
 	 * 
 	 */
-	public final class Relative implements Instruction {
-		public final RelativeOp operation;
+	public final class Addr implements Instruction {
+		public final AddrOp operation;
 		public final String operand;
 
 		/**
@@ -368,13 +388,104 @@ public interface Instruction {
 		 * @param operand
 		 *            Register operand
 		 */
-		public Relative(RelativeOp operation, String operand) {
+		public Addr(AddrOp operation, String operand) {
 			this.operation = operation;
 			this.operand = operand;
 		}
 
 		public String toString() {
 			return operation.toString() + " " + operand;
+		}
+	}
+	
+	public enum AddrRegOp {
+		lea,  // Load effective address
+	}
+	
+	/**
+	 * Represents a binary instruction which uses a constant address operand
+	 * (represented with a label) and a register operand. For example, the
+	 * <code>lea</code> instruction is implemented in this way:
+	 * 
+	 * <pre>
+	 * lea $label,%eax
+	 * </pre>
+	 * 
+	 * This loads the address of the given label into the <code>eax</code>
+	 * register.
+	 * 
+	 * @author David J. Pearce
+	 * 
+	 */
+	public final class AddrReg implements Instruction {
+		public final AddrRegOp operation;
+		public final String leftOperand;
+		public final Register rightOperand;
+
+		/**
+		 * Create a unary instruction with a register operand.
+		 * 
+		 * @param operation
+		 *            Operation to perform
+		 * @param operand
+		 *            Register operand
+		 */
+		public AddrReg(AddrRegOp operation, String leftOperand, Register rightOperand) {
+			this.operation = operation;
+			this.leftOperand = leftOperand;
+			this.rightOperand = rightOperand;
+		}
+
+		public String toString() {
+			return operation.toString() + " " + leftOperand + ", %" + rightOperand;
+		}
+	}
+	
+	public enum AddrRegRegOp {
+		lea,  // Load effective address
+	}
+	
+	/**
+	 * Represents a ternary instruction which uses an operand constructed from a
+	 * constant address and a register and a register operand. For example, the
+	 * <code>lea</code> instruction is implemented in this way:
+	 * 
+	 * <pre>
+	 * lea $label,%eax
+	 * </pre>
+	 * 
+	 * This loads the address of the given label into the <code>eax</code>
+	 * register.
+	 * 
+	 * @author David J. Pearce
+	 * 
+	 */
+	public final class AddrRegReg implements Instruction {
+		public final AddrRegRegOp operation;
+		public final String leftOperand_1;
+		public final Register leftOperand_2;
+		public final Register rightOperand;
+
+		/**
+		 * Create a ternary instruction with an composite address/register
+		 * source operand, and a register target operand.
+		 * 
+		 * @param operation
+		 *            Operation to perform
+		 * @param operand
+		 *            Register operand
+		 */
+		public AddrRegReg(AddrRegRegOp operation, String leftOperand_1,
+				Register leftOperand_2, Register rightOperand) {
+			this.operation = operation;
+			this.leftOperand_1 = leftOperand_1;
+			this.leftOperand_2 = leftOperand_2;
+			this.rightOperand = rightOperand;
+		}
+
+		public String toString() {
+			return operation.toString() + " " + leftOperand_1 + "(%"
+					+ leftOperand_2 + "), %" + rightOperand;
 		}
 	}
 }
