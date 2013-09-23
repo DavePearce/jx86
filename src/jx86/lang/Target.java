@@ -1,8 +1,9 @@
 package jx86.lang;
 
 /**
- * Provides an abstraction of a compilation target. This is useful for
- * abstracting away details of compilation targets.
+ * Provides an abstraction of a compilation target which is a combination of
+ * operating system and x86 architecture. This is useful for abstracting away
+ * details of compilation targets.
  * 
  * @author David J. Pearce
  * 
@@ -15,6 +16,9 @@ public final class Target {
 
 	public static final Target MACOS_X86_64 = new Target(OS.MACOS,Arch.X86_64); 
 	
+	public static final Target LINUX_X86_64 = new Target(OS.LINUX,Arch.X86_64); 
+	
+	
 	/**
 	 * The set of supported operating systems.
 	 * 
@@ -26,7 +30,7 @@ public final class Target {
 	}
 	
 	/**
-	 * The set of support x86 architectures.
+	 * The set of supported x86 architectures.
 	 * 
 	 * @author David J. Pearce
 	 *

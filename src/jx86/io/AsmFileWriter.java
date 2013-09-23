@@ -54,6 +54,8 @@ public class AsmFileWriter {
 	public void write(Instruction insn) {
 		if(insn instanceof Instruction.Label) {
 			write((Instruction.Label) insn);
+		} else if(insn instanceof Instruction.Unit) {
+			write((Instruction.Unit) insn);
 		} else if(insn instanceof Instruction.UnaryReg) {
 			write((Instruction.UnaryReg) insn);
 		} else if(insn instanceof Instruction.BinaryRegReg) {
@@ -67,6 +69,10 @@ public class AsmFileWriter {
 	
 	public void write(Instruction.Label insn) {
 		throw new IllegalArgumentException("unknown instruction encountered: " + insn);
+	}
+	
+	public void write(Instruction.Unit insn) {
+		out.println("\t" + insn.operation);
 	}
 	
 	public void write(Instruction.UnaryReg insn) {
