@@ -33,7 +33,15 @@ public class X86File {
 	}
 	
 	public static class Data implements Section {
-		
+		public final List<Constant> constants;
+
+		public Data() {
+			this.constants = new ArrayList<Constant>();
+		}
+
+		public Data(List<Constant> constants) {
+			this.constants = new ArrayList<Constant>(constants);
+		}
 	}
 	
 	// ============================================

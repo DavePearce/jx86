@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
+import jx86.lang.Constant;
 import jx86.lang.Instruction;
 import jx86.lang.Register;
 import jx86.lang.X86File;
@@ -45,6 +46,12 @@ public class AsmFileWriter {
 			out.println("\t.text");
 			for(Instruction insn : code.instructions) {
 				write(insn);
+			}
+		} else if (section instanceof X86File.Data) {
+			X86File.Data code = (X86File.Data) section;
+			out.println("\t.data");
+			for(Constant constant : code.constants) {
+				write(constant);
 			}
 		} else {
 			throw new IllegalArgumentException("unknown section encountered");
@@ -119,5 +126,19 @@ public class AsmFileWriter {
 				+ Register.suffix(insn.rightOperand.width()) + " "
 				+ insn.leftOperand_1 + "(%" + insn.leftOperand_2 + "), %"
 				+ insn.rightOperand);
+	}
+	
+	public void write(Constant constant) {
+		if(constant.global) {
+			out.println("\t.globl " + constant.label);
+		}
+		if(constant.alignment != 1) {
+			out.println("\t.align " + constant.alignment);
+		}
+		out.println(constant.label + ":");
+		if(constant instanceof Constant.String) {
+			Constant.String cs = (Constant.String) constant;
+			out.println("\t.asciz " + cs.value);
+		}
 	}
 }
