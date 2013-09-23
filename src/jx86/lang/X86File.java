@@ -32,6 +32,10 @@ public class X86File {
 		}
 	}
 	
+	public static class Data implements Section {
+		
+	}
+	
 	// ============================================
 	// Fields
 	// ============================================
