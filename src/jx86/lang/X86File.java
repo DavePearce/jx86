@@ -56,6 +56,10 @@ public class X86File {
 			this.sections.add(sections[i]);
 		}
 	}
+
+	public X86File(List<Section> sections) {
+		this.sections = new ArrayList<Section>(sections);
+	}
 	
 	public List<Section> sections() {
 		return sections;
