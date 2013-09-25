@@ -181,8 +181,7 @@ public interface Instruction {
 		cmpxchg, // compare and exchange
 		cmpxchg8b, // compare and exchange 8 bytes
 		or,      // Logical Inclusive OR
-		
-		
+		and,      // Logical AND				
 	}
 	
 	/**
@@ -246,9 +245,9 @@ public interface Instruction {
 		cmpxchg, // compare and exchange
 		cmpxchg8b, // compare and exchange 8 bytes
 		or,      // Logical Inclusive OR
-		
-		
+		and,      // Logical AND				
 	}
+	
 	/**
 	 * Represents a binary instruction (e.g. <code>mov</code>, <code>add</code>,
 	 * etc) with an immediate source operand and a register target operand. For
@@ -309,6 +308,149 @@ public interface Instruction {
 		public String toString() {
 			return operation.toString() + Register.suffix(rightOperand.width())
 					+ "$" + leftOperand + ", %" + rightOperand;
+		}
+	}	
+	
+	public enum ImmIndRegOp {
+		mov				
+	}
+	
+	/**
+	 * Create a binary instruction with a register target operand and an
+	 * indirect source operand (whose address is determined from a register and
+	 * an immediate offset). For example:
+	 * 
+	 * <pre>
+	 * movl -8(%ebp), %eax
+	 * </pre>
+	 * 
+	 * This loads the value from the location 8 bytes below where the
+	 * <code>ebp</code> register currently points into the <code>%eax</code>
+	 * register.
+	 * 
+	 * @author David J. Pearce
+	 * 
+	 */
+	public final class ImmIndReg implements Instruction {
+		public final ImmIndRegOp operation;
+		public final long leftOperandImm;
+		public final Register leftOperandReg;
+		public final Register rightOperand;
+		
+		/**
+		 * Create a binary instruction which operates on a register and an
+		 * indirect location (whose address is determined from a register and an
+		 * immediate offset). The immediate operand must fit within the width of
+		 * the target register, or an exception is raised.
+		 * 
+		 * @param leftOperandImm
+		 *            Immediate operand on left-hand side. This is always
+		 *            interpreted as a signed integer, regardless of width. For
+		 *            example, if the <code>rhs</code> has byte width then the
+		 *            accepted range for the immediate operand is -128 .. 127.
+		 * @param leftOperandReg
+		 *            Register operand used on left-hand side.
+		 * @param rightOperand
+		 *            Register operand on right-hand side.
+		 */
+		public ImmIndReg(ImmIndRegOp operation, long leftOperandImm,
+				Register leftOperandReg, Register rightOperand) {
+			switch(rightOperand.width()) {
+			case Byte:
+				if(leftOperandImm < Byte.MIN_VALUE || leftOperandImm > Byte.MAX_VALUE) {
+					throw new IllegalArgumentException("immediate operand does not fit into byte");
+				}
+				break;
+			case Word:
+				if(leftOperandImm < Short.MIN_VALUE || leftOperandImm > Short.MAX_VALUE) {
+					throw new IllegalArgumentException("immediate operand does not fit into word");
+				}
+				break;
+			case Long:
+				if(leftOperandImm < Integer.MIN_VALUE || leftOperandImm > Integer.MAX_VALUE) {
+					throw new IllegalArgumentException("immediate operand does not fit into double word");
+				}
+				break;
+			default:
+				// this case is always true by construction
+			}
+			this.operation = operation;
+			this.leftOperandReg = leftOperandReg;
+			this.leftOperandImm = leftOperandImm;
+			this.rightOperand = rightOperand;
+		}	
+		
+		public String toString() {
+			return operation.toString() + Register.suffix(rightOperand.width())
+					+ leftOperandImm + "(%" + leftOperandReg + "), %" + rightOperand;
+		}
+	}	
+
+	
+	public enum RegImmIndOp {
+		mov				
+	}
+	
+	/**
+	 * Create a binary instruction with a register target operand and an
+	 * indirect source operand (whose address is determined from a register and
+	 * an immediate offset). For example:
+	 * 
+	 * <pre>
+	 * movl -8(%ebp), %eax
+	 * </pre>
+	 * 
+	 * This loads the value from the location 8 bytes below where the
+	 * <code>ebp</code> register currently points into the <code>%eax</code>
+	 * register.
+	 * 
+	 * @author David J. Pearce
+	 * 
+	 */
+	public final class RegImmInd implements Instruction {
+		public final RegImmIndOp operation;
+		public final Register leftOperand;
+		public final long rightOperandImm;
+		public final Register rightOperandReg;
+		
+		/**
+		 * Create a binary instruction which operates on a register and an
+		 * indirect location (whose address is determined from a register and an
+		 * immediate offset). The immediate operand must fit within the width of
+		 * the target register, or an exception is raised.
+		 * 		
+		 */
+		public RegImmInd(RegImmIndOp operation, Register leftOperand, long rightOperandImm,
+				Register rightOperandReg) {
+			switch(leftOperand.width()) {
+			case Byte:
+				if(rightOperandImm < Byte.MIN_VALUE || rightOperandImm > Byte.MAX_VALUE) {
+					throw new IllegalArgumentException("immediate operand does not fit into byte");
+				}
+				break;
+			case Word:
+				if(rightOperandImm < Short.MIN_VALUE || rightOperandImm > Short.MAX_VALUE) {
+					throw new IllegalArgumentException("immediate operand does not fit into word");
+				}
+				break;
+			case Long:
+				if(rightOperandImm < Integer.MIN_VALUE || rightOperandImm > Integer.MAX_VALUE) {
+					throw new IllegalArgumentException("immediate operand does not fit into double word");
+				}
+				break;
+			default:
+				// this case is always true by construction
+			}
+			this.operation = operation;
+			this.leftOperand = leftOperand;
+			this.rightOperandReg = rightOperandReg;
+			this.rightOperandImm = rightOperandImm;
+		}	
+		
+		public String toString() {
+			return operation.toString() + Register.suffix(leftOperand.width())
+					+ " %" + leftOperand + ", " + rightOperandImm + "(%"
+					+ rightOperandReg + ")";
 		}
 	}	
 	

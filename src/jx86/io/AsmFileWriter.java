@@ -43,12 +43,14 @@ public class AsmFileWriter {
 	public void write(X86File.Section section) {		
 		if (section instanceof X86File.Code) {
 			X86File.Code code = (X86File.Code) section;
+			out.println();
 			out.println("\t.text");
 			for(Instruction insn : code.instructions) {
 				write(insn);
 			}
 		} else if (section instanceof X86File.Data) {
 			X86File.Data code = (X86File.Data) section;
+			out.println();
 			out.println("\t.data");
 			for(Constant constant : code.constants) {
 				write(constant);
@@ -75,6 +77,10 @@ public class AsmFileWriter {
 			write((Instruction.AddrReg) insn);
 		} else if(insn instanceof Instruction.AddrRegReg) {
 			write((Instruction.AddrRegReg) insn);
+		} else if(insn instanceof Instruction.ImmIndReg) {
+			write((Instruction.ImmIndReg) insn);
+		} else if(insn instanceof Instruction.RegImmInd) {
+			write((Instruction.RegImmInd) insn);
 		} else {
 			throw new IllegalArgumentException("unknown instruction encountered: " + insn);
 		}
@@ -111,6 +117,19 @@ public class AsmFileWriter {
 				+ insn.leftOperand + ", %" + insn.rightOperand);
 	}
 	
+	public void write(Instruction.ImmIndReg insn) {
+		out.println("\t" + insn.operation 
+				+ Register.suffix(insn.rightOperand.width()) + " "
+				+ insn.leftOperandImm + "(%" + insn.leftOperandReg + "), %" + insn.rightOperand);
+	}
+	
+	public void write(Instruction.RegImmInd insn) {
+		out.println("\t" + insn.operation 
+				+ Register.suffix(insn.leftOperand.width()) + " %"
+				+ insn.leftOperand + ", " + insn.rightOperandImm + "(%"
+				+ insn.rightOperandReg + ")");
+	}
+	
 	public void write(Instruction.Addr insn) {
 		out.println("\t" + insn.operation + " " + insn.operand);
 	}
@@ -138,7 +157,8 @@ public class AsmFileWriter {
 		out.println(constant.label + ":");
 		if(constant instanceof Constant.String) {
 			Constant.String cs = (Constant.String) constant;
-			out.println("\t.asciz " + cs.value);
+			// FIXME: probably should be doing some kind of escaping here.
+			out.println("\t.asciz \"" + cs.value + "\"");
 		}
 	}
 }
