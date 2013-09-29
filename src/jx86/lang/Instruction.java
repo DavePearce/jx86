@@ -45,8 +45,9 @@ public interface Instruction {
 		clc,   // Clear Carry flag
 		cdc,   // Clear direction flag
 		cli,   // Clear interrupt flag
+		cltd,  // Convert Signed Long to Signed Double Long
 		cmc,   // Complement carry flag
-		cbw,   // Convert byte to word
+		cbw,   // Convert byte to word		
 		cwde,  // Convert word to double word
 		cwd,   // Convert word to double word
 		cwq,   // Convert double word to quad word
@@ -108,6 +109,8 @@ public interface Instruction {
 		in,
 		Int,    // Call to interrupt
 		invlpg, // Invalidate TLB entry
+		div,     // unsigned divide
+		idiv,    // signed division
 		neg,    // Two's Complement Negation
 		not,    // One's Complement Negation
 		out,    // Output to Port
@@ -172,8 +175,6 @@ public interface Instruction {
 		sub,
 		mul,     // unsigned multiplication
 		imul,    // signed multiplication
-		div,     // unsigned divide
-		idiv,    // signed division
 		cmp,
 		cmpsb,   // compare byte word
 		cmpsw,   // compare word
@@ -236,8 +237,6 @@ public interface Instruction {
 		sub,
 		mul,     // unsigned multiplication
 		imul,    // signed multiplication
-		div,     // unsigned divide
-		idiv,    // signed division
 		cmp,
 		cmpsb,   // compare byte word
 		cmpsw,   // compare word
