@@ -154,11 +154,22 @@ public class AsmFileWriter {
 		if(constant.alignment != 1) {
 			out.println("\t.align " + constant.alignment);
 		}
-		out.println(constant.label + ":");
+		if(constant.label != null) {
+			out.println(constant.label + ":");
+		}
 		if(constant instanceof Constant.String) {
 			Constant.String cs = (Constant.String) constant;
 			// FIXME: probably should be doing some kind of escaping here.
 			out.println("\t.asciz \"" + cs.value + "\"");
+		} else if(constant instanceof Constant.Word) {
+			Constant.Word cw = (Constant.Word) constant;
+			out.println("\t.word " + cw.value);
+		} else if(constant instanceof Constant.Long) {
+			Constant.Long cw = (Constant.Long) constant;
+			out.println("\t.long " + cw.value);
+		} else if(constant instanceof Constant.Quad) {
+			Constant.Quad cw = (Constant.Quad) constant;
+			out.println("\t.quad " + cw.value);
 		}
 	}
 }
