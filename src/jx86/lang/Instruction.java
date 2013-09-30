@@ -183,6 +183,7 @@ public interface Instruction {
 		cmpxchg8b, // compare and exchange 8 bytes
 		or,      // Logical Inclusive OR
 		and,      // Logical AND				
+		xor,	// Logical Exclusive OR
 	}
 	
 	/**
@@ -245,6 +246,7 @@ public interface Instruction {
 		cmpxchg8b, // compare and exchange 8 bytes
 		or,      // Logical Inclusive OR
 		and,      // Logical AND				
+		xor,	// Logical Exclusive OR
 	}
 	
 	/**
