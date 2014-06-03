@@ -23,16 +23,18 @@ public class Register {
 		Byte  // 8 bits
 	}
 	
-	public static char suffix(Register.Width width) {
+	public static String suffix(Register.Width width) {
 		switch(width) {
 		case Byte:
-			return 'b';
+			return "b";
 		case Word:
-			return 'w';
+			return "w";
 		case Long:
-			return 'l';
+			return "l";
+		case Quad:
+			return "q";
 		default:
-			return 'q';			
+			throw new IllegalArgumentException("Invalid register width: " + width.name());			
 		}
 	}
 	
@@ -79,6 +81,17 @@ public class Register {
 	public static final Register RSP = new Register("rsp", Width.Quad);
 	public static final Register RIP = new Register("rip", Width.Quad);
 	
+	// Streaming SIMD Extensions (SSE)
+	public static final Register XMM0 = new Register("xmm0", Width.Quad);
+	public static final Register XMM1 = new Register("xmm1", Width.Quad);
+	public static final Register XMM2 = new Register("xmm2", Width.Quad);
+	public static final Register XMM3 = new Register("xmm3", Width.Quad);
+	public static final Register XMM4 = new Register("xmm4", Width.Quad);
+	public static final Register XMM5 = new Register("xmm5", Width.Quad);
+	public static final Register XMM6 = new Register("xmm6", Width.Quad);
+	public static final Register XMM7 = new Register("xmm7", Width.Quad);
+	
+	// Families	
 	public static final Register[] AX_FAMILY = {
 			Register.AL,Register.AH,Register.AX,Register.EAX,Register.RAX
 	};
@@ -161,7 +174,7 @@ public class Register {
 	}
 	
 	/**
-	 * Return the family this register is assocaited with.
+	 * Return the family this register is associated with.
 	 * 
 	 * @return
 	 */

@@ -175,14 +175,19 @@ public interface Instruction {
 		sub,
 		mul,     // unsigned multiplication
 		imul,    // signed multiplication
+		addsd,   // Scalar double precision floating point
+		subsd,   // Scalar double precision floating point
+		mulsd,   // Scalar double precision floating point
+		divsd,   // Scalar double precision floating point
 		cmp,
 		cmpsb,   // compare byte word
 		cmpsw,   // compare word
 		cmpsd,   // compare double word
 		cmpxchg, // compare and exchange
 		cmpxchg8b, // compare and exchange 8 bytes
+		comisd,  // compare scalar ordered double-precision floating point
 		or,      // Logical Inclusive OR
-		and,      // Logical AND				
+		and,      // Logical AND						
 		xor,	// Logical Exclusive OR
 	}
 	
