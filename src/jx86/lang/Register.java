@@ -41,6 +41,13 @@ public class Register {
 				|| (lhs == Width.Long && rhs == Width.ScalarSingle);
 	}
 	
+	/**
+	 * Join two register widths together to produce their "compatible" width.
+	 * 
+	 * @param lhs
+	 * @param rhs
+	 * @return
+	 */
 	private static Register.Width join(Register.Width lhs, Register.Width rhs) {
 		if(lhs == rhs) { 
 			return lhs;
