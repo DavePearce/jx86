@@ -1,5 +1,5 @@
 <project name="jx86" default="jarfile">  
-  <property name="version" value="0.1.5"/>
+  <property name="version" value="0.1.2"/>
 
   <!-- ============================================== -->
   <!-- Build Commands -->
