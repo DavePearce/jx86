@@ -16,13 +16,64 @@ public class Register {
 	// Enums & Constants
 	// ============================================
 	
-	public enum Width {
+	public enum Width {		
+		ScalarDouble, // 64bits
 		Quad, // 64 bits
+		ScalarSingle, // 32bits
 		Long, // 32 bits
 		Word, // 16 bits
-		Byte  // 8 bits
+		Byte;  // 8 bits		
 	}
 	
+
+	/**
+	 * Determine whether two registers are "compatible" with each other. That
+	 * is, whether or not they can be used together in a given instruction.
+	 * 
+	 * @param lhs
+	 * @param rhs
+	 * @return
+	 */
+	public static boolean areCompatiable(Width lhs, Width rhs) {
+		return lhs == rhs || (lhs == Width.ScalarDouble && rhs == Width.Quad)
+				|| (lhs == Width.Quad && rhs == Width.ScalarDouble)
+				|| (lhs == Width.ScalarSingle && rhs == Width.Long)
+				|| (lhs == Width.Long && rhs == Width.ScalarSingle);
+	}
+	
+	private static Register.Width join(Register.Width lhs, Register.Width rhs) {
+		if(lhs == rhs) { 
+			return lhs;
+		} else if(lhs == Width.ScalarDouble) {
+			return join(Width.Quad,rhs);
+		} else if(lhs == Width.ScalarSingle) {
+			return join(Width.Long,rhs);
+		} else if(rhs == Width.ScalarDouble) {
+			return join(lhs,Width.Quad);
+		} else if(rhs == Width.ScalarSingle) {
+			return join(lhs,Width.Long);
+		}  
+		
+		throw new IllegalArgumentException("incomparable register widths: " + lhs + ", " + rhs);
+	}
+	
+	/**
+	 * Return the appropriate suffix to associate with an instruction that
+	 * operates on two registers (potentially of different width).
+	 * 
+	 * @param width
+	 * @return
+	 */
+	public static String suffix(Register.Width lhs, Register.Width rhs) {
+		return suffix(join(lhs,rhs));		
+	}
+	
+	/**
+	 * Return the suffix associated with a given register width.
+	 * 
+	 * @param width
+	 * @return
+	 */
 	public static String suffix(Register.Width width) {
 		switch(width) {
 		case Byte:
@@ -31,8 +82,12 @@ public class Register {
 			return "w";
 		case Long:
 			return "l";
+		case ScalarSingle:
+			return "ss";
 		case Quad:
 			return "q";
+		case ScalarDouble:
+			return "sd";
 		default:
 			throw new IllegalArgumentException("Invalid register width: " + width.name());			
 		}
@@ -82,14 +137,14 @@ public class Register {
 	public static final Register RIP = new Register("rip", Width.Quad);
 	
 	// Streaming SIMD Extensions (SSE)
-	public static final Register XMM0 = new Register("xmm0", Width.Quad);
-	public static final Register XMM1 = new Register("xmm1", Width.Quad);
-	public static final Register XMM2 = new Register("xmm2", Width.Quad);
-	public static final Register XMM3 = new Register("xmm3", Width.Quad);
-	public static final Register XMM4 = new Register("xmm4", Width.Quad);
-	public static final Register XMM5 = new Register("xmm5", Width.Quad);
-	public static final Register XMM6 = new Register("xmm6", Width.Quad);
-	public static final Register XMM7 = new Register("xmm7", Width.Quad);
+	public static final Register XMM0 = new Register("xmm0", Width.ScalarDouble);
+	public static final Register XMM1 = new Register("xmm1", Width.ScalarDouble);
+	public static final Register XMM2 = new Register("xmm2", Width.ScalarDouble);
+	public static final Register XMM3 = new Register("xmm3", Width.ScalarDouble);
+	public static final Register XMM4 = new Register("xmm4", Width.ScalarDouble);
+	public static final Register XMM5 = new Register("xmm5", Width.ScalarDouble);
+	public static final Register XMM6 = new Register("xmm6", Width.ScalarDouble);
+	public static final Register XMM7 = new Register("xmm7", Width.ScalarDouble);
 	
 	// Families	
 	public static final Register[] AX_FAMILY = {

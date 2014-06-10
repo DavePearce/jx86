@@ -107,7 +107,7 @@ public class AsmFileWriter {
 	
 	public void write(Instruction.RegReg insn) {
 		out.println("\t" + insn.operation 
-				+ Register.suffix(insn.leftOperand.width()) + " %"
+				+ Register.suffix(insn.leftOperand.width(),insn.rightOperand.width()) + " %"
 				+ insn.leftOperand + ", %" + insn.rightOperand);
 	}
 	
