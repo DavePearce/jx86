@@ -179,7 +179,7 @@ public interface Instruction {
 		cmp,     		
 		cmpxchg, // compare and exchange
 		cmpxchg8b, // compare and exchange 8 bytes
-		comisd,  // compare scalar ordered double-precision floating point
+		comi,    // compare scalar ordered double-precision floating point
 		or,      // Logical Inclusive OR
 		and,      // Logical AND						
 		xor,	// Logical Exclusive OR
@@ -539,6 +539,7 @@ public interface Instruction {
 	
 	public enum AddrRegOp {
 		lea,  // Load effective address
+		mov,  // Load effective address
 	}
 	
 	/**
@@ -582,6 +583,7 @@ public interface Instruction {
 	
 	public enum AddrRegRegOp {
 		lea,  // Load effective address
+		mov
 	}
 	
 	/**
