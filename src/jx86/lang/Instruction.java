@@ -307,13 +307,17 @@ public interface Instruction {
 					+ "$" + leftOperand + ", %" + rightOperand;
 		}
 	}	
+
+	// ============================================================
+	// Ternary Operations
+	// ============================================================
 	
 	public enum ImmIndRegOp {
 		mov				
 	}
 	
 	/**
-	 * Create a binary instruction with a register target operand and an
+	 * Create a ternary instruction with a register target operand and an
 	 * indirect source operand (whose address is determined from a register and
 	 * an immediate offset). For example:
 	 * 
@@ -330,9 +334,9 @@ public interface Instruction {
 	 */
 	public final class ImmIndReg implements Instruction {
 		public final ImmIndRegOp operation;
-		public final long leftOperandImm;
-		public final Register leftOperandReg;
-		public final Register rightOperand;
+		public final long immediateOffset;
+		public final Register baseOperand;
+		public final Register targetOperand;
 		
 		/**
 		 * Create a binary instruction which operates on a register and an
@@ -372,43 +376,42 @@ public interface Instruction {
 				// this case is always true by construction
 			}
 			this.operation = operation;
-			this.leftOperandReg = leftOperandReg;
-			this.leftOperandImm = leftOperandImm;
-			this.rightOperand = rightOperand;
+			this.baseOperand = leftOperandReg;
+			this.immediateOffset = leftOperandImm;
+			this.targetOperand = rightOperand;
 		}	
 		
 		public String toString() {
-			return operation.toString() + Register.suffix(rightOperand.width())
-					+ leftOperandImm + "(%" + leftOperandReg + "), %" + rightOperand;
+			return operation.toString() + Register.suffix(targetOperand.width())
+					+ immediateOffset + "(%" + baseOperand + "), %" + targetOperand;
 		}
 	}	
 
-	
 	public enum RegImmIndOp {
 		mov
 	}
 	
 	/**
-	 * Create a binary instruction with a register target operand and an
-	 * indirect source operand (whose address is determined from a register and
+	 * Create a ternary instruction with a register source operand and an
+	 * indirect target operand (whose address is determined from a register and
 	 * an immediate offset). For example:
 	 * 
 	 * <pre>
-	 * movl -8(%ebp), %eax
+	 * movl %eax, -8(%ebp)
 	 * </pre>
 	 * 
-	 * This loads the value from the location 8 bytes below where the
-	 * <code>ebp</code> register currently points into the <code>%eax</code>
-	 * register.
+	 * This loads the value from the <code>%eax</code> register into the
+	 * location 8 bytes below where the <code>ebp</code> register currently
+	 * points.
 	 * 
 	 * @author David J. Pearce
 	 * 
 	 */
 	public final class RegImmInd implements Instruction {
 		public final RegImmIndOp operation;
-		public final Register leftOperand;
-		public final long rightOperandImm;
-		public final Register rightOperandReg;
+		public final Register sourceOperand;
+		public final long immediateOffset;
+		public final Register baseOperand;
 		
 		/**
 		 * Create a binary instruction which operates on a register and an
@@ -417,21 +420,20 @@ public interface Instruction {
 		 * the target register, or an exception is raised.
 		 * 		
 		 */
-		public RegImmInd(RegImmIndOp operation, Register leftOperand, long rightOperandImm,
-				Register rightOperandReg) {
-			switch(leftOperand.width()) {
+		public RegImmInd(RegImmIndOp operation, Register sourceOperand, long immediateOffset, Register baseOperand) {
+			switch(sourceOperand.width()) {
 			case Byte:
-				if(rightOperandImm < Byte.MIN_VALUE || rightOperandImm > Byte.MAX_VALUE) {
+				if(immediateOffset < Byte.MIN_VALUE || immediateOffset > Byte.MAX_VALUE) {
 					throw new IllegalArgumentException("immediate operand does not fit into byte");
 				}
 				break;
 			case Word:
-				if(rightOperandImm < Short.MIN_VALUE || rightOperandImm > Short.MAX_VALUE) {
+				if(immediateOffset < Short.MIN_VALUE || immediateOffset > Short.MAX_VALUE) {
 					throw new IllegalArgumentException("immediate operand does not fit into word");
 				}
 				break;
 			case Long:
-				if(rightOperandImm < Integer.MIN_VALUE || rightOperandImm > Integer.MAX_VALUE) {
+				if(immediateOffset < Integer.MIN_VALUE || immediateOffset > Integer.MAX_VALUE) {
 					throw new IllegalArgumentException("immediate operand does not fit into double word");
 				}
 				break;
@@ -439,17 +441,102 @@ public interface Instruction {
 				// this case is always true by construction
 			}
 			this.operation = operation;
-			this.leftOperand = leftOperand;
-			this.rightOperandReg = rightOperandReg;
-			this.rightOperandImm = rightOperandImm;
+			this.sourceOperand = sourceOperand;
+			this.baseOperand = baseOperand;
+			this.immediateOffset = immediateOffset;
 		}	
 		
 		public String toString() {
-			return operation.toString() + Register.suffix(leftOperand.width())
-					+ " %" + leftOperand + ", " + rightOperandImm + "(%"
-					+ rightOperandReg + ")";
+			return operation.toString() + Register.suffix(sourceOperand.width()) + " %" + sourceOperand + ", "
+					+ immediateOffset + "(%" + baseOperand + ")";
 		}
 	}	
+
+	// ============================================================
+	// Quaternary Operations
+	// ============================================================
+
+	public enum IndRegImmRegOp {
+		mov
+	}
+	
+	/**
+	 * Create a quaternary instruction with a register source operand and an
+	 * indirect target operand (whose address is determined from a two registers
+	 * and a scaling). For example:
+	 * 
+	 * <pre>
+	 * movl (%ebx,%esi,4),%eax
+	 * </pre>
+	 * 
+	 * This loads the value from the location determined by %ebx + (%esi*4) into
+	 * the <code>%eax</code> register. Here, <code>%ebx</code> is the base
+	 * operand and <code>%esi</code> is the index operand.
+	 * 
+	 * @author David J. Pearce
+	 * 
+	 */
+	public final class IndRegImmReg implements Instruction {
+		public final IndRegImmRegOp operation;		
+		public final Register baseOperand;
+		public final Register indexOperand;
+		public final long scaling;
+		public final Register targetOperand;
+		
+		public IndRegImmReg(IndRegImmRegOp op, Register baseOperand, Register indexOperand, long scaling, Register targetOperand) {
+			this.operation = op;
+			this.baseOperand = baseOperand;
+			this.indexOperand = indexOperand;
+			this.scaling = scaling;
+			this.targetOperand = targetOperand;
+		}
+		
+		public String toString() {
+			return operation.toString() + Register.suffix(targetOperand.width()) + "(%" + baseOperand + ",%"
+					+ indexOperand + "," + scaling + "), " + " %" + targetOperand;
+		}
+	}
+	
+	public enum RegIndRegImmOp {
+		mov
+	}
+	
+	/**
+	 * Create a quaternary instruction with a register source operand and an
+	 * indirect target operand (whose address is determined from a two registers
+	 * and a scaling). For example:
+	 * 
+	 * <pre>
+	 * movl %eax, (%ebx,%esi,4)
+	 * </pre>
+	 * 
+	 * This loads the value from the <code>%eax</code> register into the
+	 * location determined by %ebx + (%esi*4). Here, <code>%ebx</code> is the
+	 * base operand and <code>%esi</code> is the index operand.
+	 * 
+	 * @author David J. Pearce
+	 * 
+	 */
+	public final class RegIndImmReg implements Instruction {
+		public final RegIndRegImmOp operation;
+		public final Register sourceOperand;
+		public final Register baseOperand;
+		public final Register indexOperand;
+		public final long scaling;
+		
+		public RegIndImmReg(RegIndRegImmOp op, Register sourceOperand, Register baseOperand, Register indexOperand, long scaling) {
+			this.operation = op;
+			this.sourceOperand = sourceOperand;
+			this.baseOperand = baseOperand;
+			this.indexOperand = indexOperand;
+			this.scaling = scaling;
+		}
+		
+		public String toString() {
+			return operation.toString() + Register.suffix(sourceOperand.width()) + " %" + sourceOperand + ", (%"
+					+ baseOperand + ",%" + indexOperand + "," + scaling + ")";
+		}
+	}
 	
 	// ============================================================
 	// Branch Operations

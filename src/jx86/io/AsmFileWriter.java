@@ -119,15 +119,15 @@ public class AsmFileWriter {
 	
 	public void write(Instruction.ImmIndReg insn) {
 		out.println("\t" + insn.operation 
-				+ Register.suffix(insn.rightOperand.width()) + " "
-				+ insn.leftOperandImm + "(%" + insn.leftOperandReg + "), %" + insn.rightOperand);
+				+ Register.suffix(insn.targetOperand.width()) + " "
+				+ insn.immediateOffset + "(%" + insn.baseOperand + "), %" + insn.targetOperand);
 	}
 	
 	public void write(Instruction.RegImmInd insn) {
 		out.println("\t" + insn.operation 
-				+ Register.suffix(insn.leftOperand.width()) + " %"
-				+ insn.leftOperand + ", " + insn.rightOperandImm + "(%"
-				+ insn.rightOperandReg + ")");
+				+ Register.suffix(insn.sourceOperand.width()) + " %"
+				+ insn.sourceOperand + ", " + insn.immediateOffset + "(%"
+				+ insn.baseOperand + ")");
 	}
 	
 	public void write(Instruction.Addr insn) {
