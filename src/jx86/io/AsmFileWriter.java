@@ -81,6 +81,10 @@ public class AsmFileWriter {
 			write((Instruction.ImmIndReg) insn);
 		} else if(insn instanceof Instruction.RegImmInd) {
 			write((Instruction.RegImmInd) insn);
+		} else if(insn instanceof Instruction.RegIndRegImm) {
+			write((Instruction.RegIndRegImm) insn);
+		} else if(insn instanceof Instruction.IndRegImmReg) {
+			write((Instruction.IndRegImmReg) insn);
 		} else {
 			throw new IllegalArgumentException("unknown instruction encountered: " + insn);
 		}
@@ -128,6 +132,14 @@ public class AsmFileWriter {
 				+ Register.suffix(insn.sourceOperand.width()) + " %"
 				+ insn.sourceOperand + ", " + insn.immediateOffset + "(%"
 				+ insn.baseOperand + ")");
+	}
+		
+	public void write(Instruction.IndRegImmReg insn) {
+		out.println("\t" + insn.toString());
+	}
+	
+	public void write(Instruction.RegIndRegImm insn) {
+		out.println("\t" + insn.toString());
 	}
 	
 	public void write(Instruction.Addr insn) {

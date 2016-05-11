@@ -492,8 +492,8 @@ public interface Instruction {
 		}
 		
 		public String toString() {
-			return operation.toString() + Register.suffix(targetOperand.width()) + "(%" + baseOperand + ",%"
-					+ indexOperand + "," + scaling + "), " + " %" + targetOperand;
+			return operation.toString() + Register.suffix(targetOperand.width()) + " (%" + baseOperand + ",%"
+					+ indexOperand + "," + scaling + "), %" + targetOperand;
 		}
 	}
 	
@@ -517,14 +517,14 @@ public interface Instruction {
 	 * @author David J. Pearce
 	 * 
 	 */
-	public final class RegIndImmReg implements Instruction {
+	public final class RegIndRegImm implements Instruction {
 		public final RegIndRegImmOp operation;
 		public final Register sourceOperand;
 		public final Register baseOperand;
 		public final Register indexOperand;
 		public final long scaling;
 		
-		public RegIndImmReg(RegIndRegImmOp op, Register sourceOperand, Register baseOperand, Register indexOperand, long scaling) {
+		public RegIndRegImm(RegIndRegImmOp op, Register sourceOperand, Register baseOperand, Register indexOperand, long scaling) {
 			this.operation = op;
 			this.sourceOperand = sourceOperand;
 			this.baseOperand = baseOperand;
