@@ -183,6 +183,7 @@ public interface Instruction {
 		or,      // Logical Inclusive OR
 		and,      // Logical AND						
 		xor,	// Logical Exclusive OR
+		xchg
 	}
 	
 	/**
