@@ -46,6 +46,7 @@ public interface Instruction {
 		cdc,   // Clear direction flag
 		cli,   // Clear interrupt flag
 		cltd,  // Convert Signed Long to Signed Double Long
+		cqto,  // Convert Signed quad to oct
 		cmc,   // Complement carry flag
 		cbw,   // Convert byte to word		
 		cwde,  // Convert word to double word
