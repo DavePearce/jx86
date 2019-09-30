@@ -109,6 +109,15 @@ public class Register {
 	public static final Register CH = new Register("ch", Width.Byte);
 	public static final Register DL = new Register("dl", Width.Byte);
 	public static final Register DH = new Register("dh", Width.Byte);
+
+	public static final Register R8b = new Register("r8b", Width.Quad);
+	public static final Register R9b = new Register("r9b", Width.Quad);
+	public static final Register R10b = new Register("r10b", Width.Quad);
+	public static final Register R11b = new Register("r11b", Width.Quad);
+	public static final Register R12b = new Register("r12b", Width.Quad);
+	public static final Register R13b = new Register("r13b", Width.Quad);
+	public static final Register R14b = new Register("r14b", Width.Quad);
+	public static final Register R15b = new Register("r15b", Width.Quad);
 	
 	// x86_16
 	public static final Register AX = new Register("ax", Width.Word);
@@ -120,6 +129,15 @@ public class Register {
 	public static final Register BP = new Register("bp", Width.Word);
 	public static final Register SP = new Register("sp", Width.Word);
 	public static final Register IP = new Register("ip", Width.Word);
+
+	public static final Register R8w = new Register("r8w", Width.Quad);
+	public static final Register R9w = new Register("r9w", Width.Quad);
+	public static final Register R10w = new Register("r10w", Width.Quad);
+	public static final Register R11w = new Register("r11w", Width.Quad);
+	public static final Register R12w = new Register("r12w", Width.Quad);
+	public static final Register R13w = new Register("r13w", Width.Quad);
+	public static final Register R14w = new Register("r14w", Width.Quad);
+	public static final Register R15w = new Register("r15w", Width.Quad);
 		
 	// x86_32
 	public static final Register EAX = new Register("eax", Width.Long);
@@ -131,6 +149,15 @@ public class Register {
 	public static final Register EBP = new Register("ebp", Width.Long);
 	public static final Register ESP = new Register("esp", Width.Long);
 	public static final Register EIP = new Register("eip", Width.Long);
+
+	public static final Register R8d = new Register("r8d", Width.Quad);
+	public static final Register R9d = new Register("r9d", Width.Quad);
+	public static final Register R10d = new Register("r10d", Width.Quad);
+	public static final Register R11d = new Register("r11d", Width.Quad);
+	public static final Register R12d = new Register("r12d", Width.Quad);
+	public static final Register R13d = new Register("r13d", Width.Quad);
+	public static final Register R14d = new Register("r14d", Width.Quad);
+	public static final Register R15d = new Register("r15d", Width.Quad);
 	
 	// x86_64
 	public static final Register RAX = new Register("rax", Width.Quad);
@@ -142,7 +169,16 @@ public class Register {
 	public static final Register RBP = new Register("rbp", Width.Quad);
 	public static final Register RSP = new Register("rsp", Width.Quad);
 	public static final Register RIP = new Register("rip", Width.Quad);
-	
+
+	public static final Register R8 = new Register("r8", Width.Quad);
+	public static final Register R9 = new Register("r9", Width.Quad);
+	public static final Register R10 = new Register("r10", Width.Quad);
+	public static final Register R11 = new Register("r11", Width.Quad);
+	public static final Register R12 = new Register("r12", Width.Quad);
+	public static final Register R13 = new Register("r13", Width.Quad);
+	public static final Register R14 = new Register("r14", Width.Quad);
+	public static final Register R15 = new Register("r15", Width.Quad);
+
 	// Streaming SIMD Extensions (SSE)
 	public static final Register XMM0 = new Register("xmm0", Width.ScalarDouble);
 	public static final Register XMM1 = new Register("xmm1", Width.ScalarDouble);
@@ -181,6 +217,31 @@ public class Register {
 	public static final Register[] IP_FAMILY = {
 		Register.IP,Register.EIP,Register.RIP
 	};
+
+	public static final Register[] R8_FAMILY = {
+		Register.R8b, Register.R8w, Register.R8d, Register.R8
+	};
+	public static final Register[] R9_FAMILY = {
+		Register.R9b, Register.R9w, Register.R9d, Register.R9
+	};
+	public static final Register[] R10_FAMILY = {
+		Register.R10b, Register.R10w, Register.R10d, Register.R10
+	};
+	public static final Register[] R11_FAMILY = {
+		Register.R11b, Register.R11w, Register.R11d, Register.R11
+	};
+	public static final Register[] R12_FAMILY = {
+		Register.R12b, Register.R12w, Register.R12d, Register.R12
+	};
+	public static final Register[] R13_FAMILY = {
+		Register.R13b, Register.R13w, Register.R13d, Register.R13
+	};
+	public static final Register[] R14_FAMILY = {
+		Register.R14b, Register.R14w, Register.R14d, Register.R14
+	};
+	public static final Register[] R15_FAMILY = {
+		Register.R15b, Register.R15w, Register.R15d, Register.R15
+	};
 	
 	public static final Register[][] ALL_FAMILIES = {
 		AX_FAMILY,
@@ -191,7 +252,15 @@ public class Register {
 		SI_FAMILY,
 		BP_FAMILY,
 		SP_FAMILY,
-		IP_FAMILY
+		IP_FAMILY,
+		R8_FAMILY,
+		R9_FAMILY,
+		R10_FAMILY,
+		R11_FAMILY,
+		R12_FAMILY,
+		R13_FAMILY,
+		R14_FAMILY,
+		R15_FAMILY
 	};
 	
 	// ============================================
