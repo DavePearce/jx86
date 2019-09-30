@@ -14,11 +14,11 @@ public final class Target {
 	// Enums & Constants
 	// ============================================
 
-	public static final Target MACOS_X86_64 = new Target(OS.MACOS,Arch.X86_64); 
+	public static final Target MACOS_X86_64 = new Target(OS.MACOS,Arch.X86_64, ABI.SystemV);
 	
-	public static final Target LINUX_X86_64 = new Target(OS.LINUX,Arch.X86_64); 
+	public static final Target LINUX_X86_64 = new Target(OS.LINUX,Arch.X86_64, ABI.SystemV);
 	
-	public static final Target WINDOWS_X86_64 = new Target(OS.WINDOWS, Arch.X86_64);
+	public static final Target WINDOWS_X86_64 = new Target(OS.WINDOWS, Arch.X86_64, ABI.Windows);
 	/**
 	 * The set of supported operating systems.
 	 * 
@@ -38,6 +38,10 @@ public final class Target {
 	public enum Arch {
 		X86_32, X86_64
 	}
+
+	public enum ABI {
+		SystemV, Windows
+	}
 	
 	// ============================================
 	// Fields
@@ -45,14 +49,16 @@ public final class Target {
 			
 	public final OS os;
 	public final Arch arch;
+	public final ABI abi;
 	
 	// ============================================
 	// Constructors
 	// ============================================
 
-	private Target(OS os, Arch arch) {
+	private Target(OS os, Arch arch, ABI abi) {
 		this.os = os;
 		this.arch = arch;
+		this.abi = abi;
 	}
 	
 	/**
