@@ -18,7 +18,7 @@ public final class Target {
 	
 	public static final Target LINUX_X86_64 = new Target(OS.LINUX,Arch.X86_64); 
 	
-	
+	public static final Target WINDOWS_X86_64 = new Target(OS.WINDOWS, Arch.X86_64);
 	/**
 	 * The set of supported operating systems.
 	 * 
@@ -26,7 +26,7 @@ public final class Target {
 	 * 
 	 */
 	public enum OS {
-		LINUX, MACOS
+		LINUX, MACOS, WINDOWS
 	}
 	
 	/**
